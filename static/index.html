@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poliglota - Open Source Language Immersion</title>
+    <link rel="stylesheet" href="static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        #error-banner {
+            display: none;
+            background: #ef4444;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            font-weight: 600;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="blob-bg blob-1"></div>
+    <div class="blob-bg blob-2"></div>
+    <div class="blob-bg blob-3"></div>
+    
+    <div class="app-container" id="main-app">
+        <header class="fade-in">
+            <h1>Poli<span class="gradient-text">glota</span></h1>
+            <p>AI-Powered Contextual Bilingual Immersion</p>
+        </header>
+
+        <div id="error-banner"></div>
+
+        <main>
+            <!-- Step 1: Upload & Settings -->
+            <section class="glass-panel slide-up" id="setup-section">
+                <div class="panel-header">
+                    <h2>Content & Settings</h2>
+                    <div class="status-badge">Step 1</div>
+                </div>
+                
+                <form id="setup-form">
+                    <div class="form-grid">
+                        
+                        <div class="input-group">
+                            <label>Content Language (Source)</label>
+                            <select id="source-lang" required>
+                                <option value="en">English</option>
+                                <option value="es">Spanish</option>
+                                <option value="fr">French</option>
+                                <option value="de">German</option>
+                                <option value="it">Italian</option>
+                                <option value="pt">Portuguese</option>
+                                <option value="pl">Polish</option>
+                                <option value="ru" selected>Russian</option>
+                            </select>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>Learning Language (Target)</label>
+                            <select id="target-lang" required>
+                                <option value="en">English</option>
+                                <option value="es">Spanish</option>
+                                <option value="fr">French</option>
+                                <option value="de">German</option>
+                                <option value="it">Italian</option>
+                                <option value="pt">Portuguese</option>
+                                <option value="pl" selected>Polish</option>
+                                <option value="ru">Russian</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Voice Profile</label>
+                            <select id="gender" required>
+                                <option value="female" selected>Female Voices</option>
+                                <option value="male">Male Voices</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Immersion Mode</label>
+                            <select id="mode" required>
+                                <option value="source_target">Source -> Target</option>
+                                <option value="target_source">Target -> Source</option>
+                                <option value="target_only">Target Only</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <div class="input-group full-width file-dropzone" id="dropzone">
+                        <input type="file" id="file" accept=".txt,.pdf" hidden>
+                        <div class="dropzone-content">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 16L12 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M9 11L12 8L15 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M8 21H16C18.2091 21 20 19.2091 20 17V7C20 4.79086 18.2091 3 16 3H8C5.79086 3 4 4.79086 4 7V17C4 19.2091 5.79086 21 8 21Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span class="file-name">Click to upload text document or PDF</span>
+                        </div>
+                    </div>
+
+                    <div class="divider-text"><span>OR TYPE TEXT</span></div>
+                    
+                    <div class="input-group full-width">
+                        <textarea id="text" placeholder="Enter text in the source language..." rows="4"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn primary-btn btn-animate" id="start-btn">
+                        <span>Begin Immersion</span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                    <div id="loading-overlay" class="loading-overlay hidden">
+                        <div class="spinner"></div>
+                        <p>Processing document, please wait...</p>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Step 2: Playback -->
+            <section class="glass-panel hidden" id="playback-section">
+                <div class="panel-header">
+                    <h2>Immersion Session</h2>
+                    <div class="playback-controls">
+                        <button id="play-btn" class="icon-btn play-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5V19L19 12L8 5Z" /></svg>
+                        </button>
+                        <button id="pause-btn" class="icon-btn pause-icon" disabled>
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 19H10V5H6V19ZM14 5V19H18V5H14Z" /></svg>
+                        </button>
+                        <button id="download-full-btn" class="icon-btn" title="Download Full MP3" style="background: rgba(255,255,255,0.1); color: white;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:24px; height:24px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="progress-wrapper">
+                    <div class="progress-bar">
+                        <div id="progress-fill" class="progress-fill"></div>
+                    </div>
+                    <div class="progress-stats">
+                        <span id="current-index">0</span> / <span id="total-sentences">0</span> sentences
+                    </div>
+                </div>
+
+                <div id="text-display" class="text-display scrollable-container">
+                    <div id="sentence-loader" class="skeleton-loader hidden">
+                        <div class="skeleton-line"></div>
+                        <div class="skeleton-line short"></div>
+                    </div>
+
+                    <div class="cards-container">
+                        <div class="sentence-card source-card hidden" id="source-card">
+                            <div class="lang-badge" id="source-badge">SRC</div>
+                            <p id="source-text" class="sentence-text"></p>
+                        </div>
+                        <div class="sentence-card target-card hidden" id="target-card">
+                            <div class="lang-badge" id="target-badge">TGT</div>
+                            <p id="target-text" class="sentence-text"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="back-btn" class="btn secondary-btn mt-4">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Finish & Back to Settings</span>
+                </button>
+            </section>
+        </main>
+    </div>
+    
+    <audio id="audio-player" hidden></audio>
+    <script src="static/app.js"></script>
+</body>
+</html>

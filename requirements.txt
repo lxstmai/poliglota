@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+python-multipart
+pydantic
+edge-tts
+pypdf
+deep_translator
+nltk
